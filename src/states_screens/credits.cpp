@@ -47,7 +47,7 @@ public:
     stringw              m_name;
     std::vector<stringw> m_subentries;
 
-    CreditsEntry(stringw& name)
+    CreditsEntry(stringw &name)
     {
         m_name = name;
     }
@@ -64,11 +64,11 @@ public:
 
     CreditsSection(stringw name)       { m_name = name;             }
     // ------------------------------------------------------------------------
-    void addEntry(CreditsEntry& entry) {m_entries.push_back(entry); }
+    void addEntry(CreditsEntry& entry) { m_entries.push_back(entry); }
     // ------------------------------------------------------------------------
-    void addSubEntry(stringw& subEntryString)
+    void addSubEntry(stringw &subEntryString)
     {
-        m_entries[m_entries.size()-1].m_subentries.push_back(subEntryString);
+        m_entries[m_entries.size() - 1].m_subentries.push_back(subEntryString);
     }
 };   // CreditdsSection
 
@@ -78,48 +78,6 @@ CreditsSection* CreditsScreen::getCurrentSection()
 {
     return m_sections.get(m_sections.size()-1);
 }   // getCurrentSection
-
-// ----------------------------------------------------------------------------
-
-bool CreditsScreen::getWideLine(std::ifstream& file, core::stringw* out)
-{
-    if (!file.good())
-    {
-        Log::error("CreditsScreen", "getWideLine: File is not good!");
-        return false;
-    }
-    wchar_t wide_char;
-
-    bool found_eol = false;
-    stringw line;
-
-    char buff[2];
-
-    while (true)
-    {
-        file.read( buff, 2 );
-        if (file.good())
-        {
-            // We got no complaints so I assume the endianness code here is OK
-            wide_char = unsigned(buff[0] & 0xFF)
-                      | (unsigned(buff[1] & 0xFF) << 8);
-            line += wide_char;
-            if (wide_char == L'\n')
-            {
-                found_eol = true;
-                break;
-            }
-        }
-        else
-        {
-            break;
-        }
-    }
-
-    if (!found_eol) return false;
-    *out = line;
-    return true;
-}   // getWideLine
 
 // ----------------------------------------------------------------------------
 
@@ -135,15 +93,85 @@ CreditsScreen::CreditsScreen() : Screen("credits.stkgui")
 
 // ----------------------------------------------------------------------------
 
+stringw utf8_to_utf16(const std::string& utf8)
+{
+    std::vector<unsigned long> unicode;
+    size_t i = 0;
+    while (i < utf8.size())
+    {
+        unsigned long uni;
+        size_t todo;
+        unsigned char ch = utf8[i++];
+        if (ch <= 0x7F)
+        {
+            uni = ch;
+            todo = 0;
+        }
+        else if (ch <= 0xBF)
+        {
+            throw std::logic_error("not a UTF-8 string");
+        }
+        else if (ch <= 0xDF)
+        {
+            uni = ch & 0x1F;
+            todo = 1;
+        }
+        else if (ch <= 0xEF)
+        {
+            uni = ch & 0x0F;
+            todo = 2;
+        }
+        else if (ch <= 0xF7)
+        {
+            uni = ch & 0x07;
+            todo = 3;
+        }
+        else
+        {
+            throw std::logic_error("not a UTF-8 string");
+        }
+        for (size_t j = 0; j < todo; ++j)
+        {
+            if (i == utf8.size())
+                throw std::logic_error("not a UTF-8 string");
+            unsigned char ch = utf8[i++];
+            if (ch < 0x80 || ch > 0xBF)
+                throw std::logic_error("not a UTF-8 string");
+            uni <<= 6;
+            uni += ch & 0x3F;
+        }
+        if (uni >= 0xD800 && uni <= 0xDFFF)
+            throw std::logic_error("not a UTF-8 string");
+        if (uni > 0x10FFFF)
+            throw std::logic_error("not a UTF-8 string");
+        unicode.push_back(uni);
+    }
+    stringw utf16;
+    for (size_t i = 0; i < unicode.size(); ++i)
+    {
+        unsigned long uni = unicode[i];
+        if (uni <= 0xFFFF)
+        {
+            utf16 += (wchar_t)uni;
+        }
+        else
+        {
+            uni -= 0x10000;
+            utf16 += (wchar_t)((uni >> 10) + 0xD800);
+            utf16 += (wchar_t)((uni & 0x3FF) + 0xDC00);
+        }
+    }
+
+    return utf16;
+}
+
 void CreditsScreen::loadedFromFile()
 {
     reset();
-
     m_throttle_FPS = false;
 
     std::string creditsfile = file_manager->getAsset("CREDITS");
-
-    std::ifstream file( creditsfile.c_str() ) ;
+    std::ifstream file(creditsfile.c_str()) ;
 
     if (file.fail() || !file.is_open() || file.eof())
     {
@@ -152,12 +180,6 @@ void CreditsScreen::loadedFromFile()
         return;
     }
 
-    stringw line;
-
-    // skip Unicode header
-    file.get();
-    file.get();
-
     if (file.fail() || !file.is_open() || file.eof())
     {
         Log::error("CreditsScreen", "Failed to read file at '%s', unexpected EOF.",
@@ -165,35 +187,36 @@ void CreditsScreen::loadedFromFile()
         return;
     }
 
+    // let's assume the file is encoded as UTF-8
+    std::string line;
     int lineCount = 0;
-
-    // let's assume the file is encoded as UTF-16
-    while (getWideLine( file, &line ))
+    while (std::getline(file, line))
     {
-        stringc cversion = line.c_str();
-        //printf("CREDITS line : %s\n", cversion.c_str());
-
-        line = line.trim();
+        // TODO trim
+        //line = line.trim();
 
         if (line.size() < 1) continue; // empty line
 
         lineCount++;
 
-        if ((line[0] & 0xFF) == '=' && (line[line.size()-1] & 0xFF) == '=')
+        if (line[0]== '=' && line[line.size() - 1] == '=') // new section
         {
-            line = stringw( line.subString(1, line.size()-2).c_str() );
-            line = line.trim();
+            printf("CREDITS line : %s\n", line.c_str());
+            line = line.substr(1, line.size() - 2);
 
-            m_sections.push_back( new CreditsSection(line)  );
+            stringw line_w = utf8_to_utf16(line);
+            m_sections.push_back(new CreditsSection(line_w.trim()));
         }
-        else if ((line[0] & 0xFF) == '-')
+        else if (line[0] == '-') // new subentry
         {
-            line = stringw( line.subString(1, line.size()-1).c_str() );
-            getCurrentSection()->addSubEntry( line );
+            line = line.substr(1, line.size() - 1);
+            stringw line_w = line.c_str();
+            getCurrentSection()->addSubEntry(line_w.trim());
         }
-        else
+        else // new entry
         {
-            CreditsEntry entry(line);
+            stringw line_w = line.c_str();
+            CreditsEntry entry(line_w.trim());
             getCurrentSection()->addEntry( entry );
         }
     } // end while
@@ -206,21 +229,24 @@ void CreditsScreen::loadedFromFile()
     }
 
 
-    irr::core::stringw translators_credits = _("translator-credits");
+//    stringw translators_creditsw = _("translator-credits");
+//    stringc translators_creditsc(translators_creditsw);
+//    std::string translators_credits(translators_creditsc.c_str());
 
+    stringw translators_credits = _("translator-credits");
     if (translators_credits != L"translator-credits")
     {
-        std::vector<irr::core::stringw> translator  =
+        std::vector<stringw> translator  =
             StringUtils::split(translators_credits, '\n');
 
-        m_sections.push_back( new CreditsSection("Translations"));
+        m_sections.push_back(new CreditsSection("Translations"));
         for(unsigned int i = 1; i < translator.size(); i = i + 4)
         {
-            line = stringw(translations->getCurrentLanguageName().c_str());
-            CreditsEntry entry(line);
-            getCurrentSection()->addEntry( entry );
+            stringw trans = translations->getCurrentLanguageName().c_str();
+            CreditsEntry entry(trans);
+            getCurrentSection()->addEntry(entry);
 
-            for(unsigned int j = 0; i + j < translator.size() && j < 6; j ++)
+            for(unsigned int j = 0; (i + j) < translator.size() && j < 6; j ++)
             {
                 getCurrentSection()->addSubEntry(translator[i + j]);
             }

@@ -56,7 +56,6 @@ class CreditsScreen : public GUIEngine::Screen,
 
     friend class GUIEngine::ScreenSingleton<CreditsScreen>;
     CreditsScreen();
-    bool getWideLine(std::ifstream& file, core::stringw* out);
 
     bool m_is_victory_music;
 
