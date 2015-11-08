@@ -7,9 +7,15 @@ language: cpp
 compiler:
   - gcc
 # - clang
-#branches:
-#  only:
-#    - master
+
+matrix:
+  fast_finish: true
+
+env:
+  matrix:
+    - BUILD_TYPE="Debug"
+    - BUILD_TYPE="Release"
+
 before_install:
   # Update repos
   - sudo apt-get update -qq
@@ -24,34 +30,11 @@ before_install:
 
 before_script:
   - export THREADS=`nproc`
-  # Unfortunately using all threads crashes g++: "g++: internal compiler error: Killed (program cc1plus)"
-  - export THREADS=4
   - echo "THREADS = $THREADS"
 
 script:
-  
-  # First a debug build: 
-  - mkdir build-debug
-  - cd build-debug
-  - cmake .. -DCMAKE_BUILD_TYPE=Debug -DCHECK_ASSETS=off
+  - mkdir "build-$BUILD_TYPE"
+  - cd "build-$BUILD_TYPE"
+  - cmake .. -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DCHECK_ASSETS=off
   - make VERBOSE=1 -j $THREADS
 
-  # Then a release build: 
-  - cd ..
-  - mkdir build-release
-  - cd build-release
-  - cmake .. -DCMAKE_BUILD_TYPE=Release -DCHECK_ASSETS=off
-  - make VERBOSE=1 -j $THREADS
-
-notifications:
-  irc:
-    channels:
-      - "irc.freenode.org#stk"
-    skip_join: false
-    use_notice: true
-    template:
-      #- "[%{commit}: %{author}] %{message}"
-      #- "%{build_url}"
-      - "[%{repository}#%{branch} @%{commit}] %{author}): %{message}"
-      - "Diff: %{compare_url}"
-      - "Build: %{build_url}"
