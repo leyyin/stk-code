@@ -28,9 +28,14 @@ before_install:
   - sudo apt-get update -qq
   - sudo apt-get install libgl1-mesa-dev libglu1-mesa-dev libglew-dev cmake
 
+before_script:
+  # - export THREADS=`nproc`
+  # Unfortunately using all threads crashes g++: "g++: internal compiler error: Killed (program cc1plus)"
+  - export THREADS=16
+
 script:
-  - mkdir "build-$BUILD_TYPE"
-  - cd "build-$BUILD_TYPE"
+  - mkdir "build"
+  - cd "build"
   - cmake .. -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DCHECK_ASSETS=off
-  - make VERBOSE=1 -j 16
+  - make VERBOSE=1 -j $THREADS
 
