@@ -3,6 +3,7 @@
 # Configuration manual:
 # http://docs.travis-ci.com/user/build-configuration/
 #
+sudo: required
 language: cpp
 compiler:
   - gcc
@@ -31,7 +32,9 @@ before_install:
 before_script:
   # - export THREADS=`nproc`
   # Unfortunately using all threads crashes g++: "g++: internal compiler error: Killed (program cc1plus)"
-  - export THREADS=16
+  - export THREADS=4
+  - echo CORES = `nproc`
+  - free -mt
 
 script:
   - mkdir "build"
