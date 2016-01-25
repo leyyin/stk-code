@@ -3,7 +3,7 @@
 # Configuration manual:
 # http://docs.travis-ci.com/user/build-configuration/
 #
-sudo: required
+sudo: false
 language: cpp
 compiler:
   - gcc
@@ -17,17 +17,21 @@ env:
     - BUILD_TYPE="Debug"
     - BUILD_TYPE="Release"
 
-before_install:
-  # Install mesa from an other repo (a newer version is required). Quantal is not supported anymore, saucy is only supported till July 2014,
-  # so we try to use trusty (precise which is what travis uses a too old mesa version which doesn't link)
-  - sudo apt-add-repository "deb http://archive.ubuntu.com/ubuntu trusty main restricted"
-  - sudo apt-key adv --recv-keys --keyserver keyserver.ubuntu.com 3B4FE6ACC0B21F32
-
-  # Update repos
-  - sudo apt-get update -qq
-
-  # Install dependencies
-  - sudo apt-get install build-essential libogg-dev libvorbis-dev libopenal-dev libxxf86vm-dev libcurl4-openssl-dev libfribidi-dev libbluetooth-dev libgl1-mesa-dev libglu1-mesa-dev libglew-dev cmake
+addons:
+  apt:
+    packages:
+    - build-essential
+    - libogg-dev
+    - libvorbis-dev
+    - libopenal-dev
+    - libxxf86vm-dev
+    - libcurl4-openssl-dev
+    - libfribidi-dev
+    - libbluetooth-dev
+    - libgl1-mesa-dev
+    - libglu1-mesa-dev
+    - libglew-dev
+    - cmake
 
 before_script:
   - export THREADS=$((`nproc` + 1))
