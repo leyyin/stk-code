@@ -48,6 +48,8 @@ before_install:
         brew install libogg libvorbis openal-soft freetype fribidi;
         sudo ln -s /System/Library/Frameworks/OpenGL.framework/Versions/A/Headers/ /usr/local/include/GL;
         xcrun --show-sdk-path;
+        sudo ln -s /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.9.sdk/usr/include/ /usr/include
+        sudo ln -s /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.9.sdk/System/Library/Frameworks/OpenGL.framework/Headers/ /usr/local/include/OpenGL
     fi
 
 before_script:
