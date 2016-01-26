@@ -46,6 +46,8 @@ before_install:
         brew update;
         brew upgrade cmake;
         brew install libogg libvorbis openal-soft freetype fribidi;
+        sudo ln -s /System/Library/Frameworks/OpenGL.framework/Versions/A/Headers/ /usr/local/include/GL;
+        xcrun --show-sdk-path;
     fi
 
 before_script:
