@@ -58,5 +58,5 @@ before_script:
 script:
   - mkdir "build"
   - cd "build"
-  - cmake .. -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DCHECK_ASSETS=off
+  - cmake .. -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DUSE_WIIUSE=0 -DCHECK_ASSETS=off
   - make VERBOSE=1 -j $THREADS
