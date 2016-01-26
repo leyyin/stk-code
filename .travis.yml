@@ -52,7 +52,7 @@ before_script:
   - export THREADS=$((`nproc` + 1))
   - echo "THREADS = $THREADS"
   - if [ "$TRAVIS_OS_NAME" = "linux" ]; then
-        free -mt
+        free -mt;
     fi
 
 script:
