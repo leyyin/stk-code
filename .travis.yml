@@ -51,7 +51,9 @@ before_install:
 before_script:
   - export THREADS=$((`nproc` + 1))
   - echo "THREADS = $THREADS"
-  - free -mt
+  - if [ "$TRAVIS_OS_NAME" = "linux" ]; then
+        free -mt
+    fi
 
 script:
   - mkdir "build"
