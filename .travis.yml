@@ -10,7 +10,6 @@ compiler:
   - clang
 
 os:
-  - linux
   - osx
 
 matrix:
@@ -23,22 +22,6 @@ env:
   matrix:
     - BUILD_TYPE="Debug"
     - BUILD_TYPE="Release"
-
-addons:
-  apt:
-    packages:
-    - build-essential
-    - libogg-dev
-    - libvorbis-dev
-    - libopenal-dev
-    - libxxf86vm-dev
-    - libcurl4-openssl-dev
-    - libfribidi-dev
-    - libbluetooth-dev
-    - libgl1-mesa-dev
-    - libglu1-mesa-dev
-    - libglew-dev
-    - cmake
 
 
 before_install:
@@ -53,11 +36,7 @@ before_install:
     fi
 
 before_script:
-  - export THREADS=$((`nproc` + 1))
-  - echo "THREADS = $THREADS"
-  - if [ "$TRAVIS_OS_NAME" = "linux" ]; then
-        free -mt;
-    fi
+  - export THREADS=8
 
 script:
   - mkdir "build"
