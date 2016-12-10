@@ -25,23 +25,17 @@ env:
 
   #wget "http://downloads.sourceforge.net/project/supertuxkart/SuperTuxKart%20Dependencies/OSX/DepsFrameworks0.9.2-64bits.zip";
   #unzip -a DepsFrameworks0.9.2-64bits.zip;
+  #         sudo ln -s /System/Library/Frameworks/OpenGL.framework/Versions/A/Headers/ /usr/local/include/GL;
 before_install:
   - if [ "$TRAVIS_OS_NAME" = "osx" ]; then
         brew update;
         brew outdated cmake || brew upgrade cmake;
         brew install libpng libogg libvorbis openal-soft freetype fribidi;
         sudo mkdir -p /usr/local/include/;
-        sudo ln -s /System/Library/Frameworks/OpenGL.framework/Versions/A/Headers/ /usr/local/include/GL;
-        pwd;
-        pushd .;
-        cd ~;
-        mkdir dependencies;
-        cd dependencies;
-        pwd;
-        ls -la;
         xcrun --show-sdk-path;
         popd;
-        ls -la /opt/local/include/freetype2/;
+        ls -la /usr/include/freetype2;
+        pkg-config --cflags freetype2;
         pwd;
     fi
 
@@ -51,5 +45,5 @@ before_script:
 script:
   - mkdir "build"
   - cd "build"
-  - cmake .. -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DUSE_WIIUSE=0 -DFREETYPE_INCLUDE_DIRS=/opt/local/include/freetype2/ -DCHECK_ASSETS=off
+  - cmake .. -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DUSE_WIIUSE=0 -DFREETYPE_INCLUDE_DIRS=/usr/include/freetype2 -DCHECK_ASSETS=off
   - make VERBOSE=1 -j $THREADS CPPFLAGS=`pkg-config --cflags freetype2`
