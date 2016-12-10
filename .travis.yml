@@ -3,7 +3,7 @@
 # Configuration manual:
 # http://docs.travis-ci.com/user/build-configuration/
 #
-sudo: false
+sudo: required
 language: cpp
 compiler:
   - gcc
