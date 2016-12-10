@@ -36,16 +36,13 @@ before_install:
         cd ~;
         mkdir dependencies;
         cd dependencies;
-        wget "http://downloads.sourceforge.net/project/supertuxkart/SuperTuxKart%20Dependencies/OSX/DepsFrameworks0.9.2-64bits.zip";
-        unzip -a DepsFrameworks0.9.2-64bits.zip;
+        #wget "http://downloads.sourceforge.net/project/supertuxkart/SuperTuxKart%20Dependencies/OSX/DepsFrameworks0.9.2-64bits.zip";
+        #unzip -a DepsFrameworks0.9.2-64bits.zip;
         pwd;
         ls -la;
-        csrutil status;
-        csrutil disable;
-        sudo echo "test" > /System/Library/Frameworks/AAAAAAAAAAAAAAAAAA.txt;
-        sudo ls -la /System/Library/Frameworks/;
         xcrun --show-sdk-path;
         popd;
+        ls -la /opt/local/include/freetype2/;
         pwd;
     fi
 
@@ -55,5 +52,5 @@ before_script:
 script:
   - mkdir "build"
   - cd "build"
-  - cmake .. -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DUSE_WIIUSE=0 -DCHECK_ASSETS=off
+  - cmake .. -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DUSE_WIIUSE=0 -DFREETYPE_INCLUDE_DIRS=/opt/local/include/freetype2/ -DCHECK_ASSETS=off
   - make VERBOSE=1 -j $THREADS
