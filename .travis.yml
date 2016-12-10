@@ -3,7 +3,7 @@
 # Configuration manual:
 # http://docs.travis-ci.com/user/build-configuration/
 #
-sudo: required
+sudo: false
 language: cpp
 compiler:
   - gcc
@@ -31,6 +31,8 @@ before_install:
         brew install libpng libogg libvorbis openal-soft freetype fribidi;
         sudo mkdir -p /usr/local/include/;
         sudo ln -s /System/Library/Frameworks/OpenGL.framework/Versions/A/Headers/ /usr/local/include/GL;
+        pwd;
+        pushd .;
         cd ~;
         mkdir dependencies;
         cd dependencies;
@@ -38,9 +40,13 @@ before_install:
         unzip -a DepsFrameworks0.9.2-64bits.zip;
         pwd;
         ls -la;
+        csrutil status;
+        csrutil disable;
         sudo echo "test" > /System/Library/Frameworks/AAAAAAAAAAAAAAAAAA.txt;
         sudo ls -la /System/Library/Frameworks/;
         xcrun --show-sdk-path;
+        popd;
+        pwd;
     fi
 
 before_script:
