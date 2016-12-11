@@ -28,15 +28,24 @@ env:
   #         sudo ln -s /System/Library/Frameworks/OpenGL.framework/Versions/A/Headers/ /usr/local/include/GL;
 before_install:
   - if [ "$TRAVIS_OS_NAME" = "osx" ]; then
+        echo "STARTING TO INSTALL PACKAGES";
+        sudo mkdir -p /usr/local/include/;
         brew update;
         brew outdated cmake || brew upgrade cmake;
         brew install glib libpng libogg libvorbis openal-soft freetype fribidi;
-        sudo mkdir -p /usr/local/include/;
         xcrun --show-sdk-path;
-        popd;
         ls -la /usr/include/freetype2;
         pkg-config --cflags freetype2;
+        
+        # hack glib
+        echo $CPPFLAGS;
+        echo $LDFLAGS;
+        echo $PKG_CONFIG_PATH;
+        export CPPFLAGS=-I/usr/local/Cellar/glib/2.50.2/include/glib-2.0/;
+        export LDFLAGS=-L/usr/local/Cellar/glib/2.50.2/lib/;
+        export PKG_CONFIG_PATH=/usr/local/Cellar/glib/2.50.2/lib/pkgconfig/;
         pwd;
+        echo "ENDING TO INSTALL PACKAGES";
     fi
 
 before_script:
