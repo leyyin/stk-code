@@ -30,7 +30,7 @@ before_install:
   - if [ "$TRAVIS_OS_NAME" = "osx" ]; then
         brew update;
         brew outdated cmake || brew upgrade cmake;
-        brew install libpng libogg libvorbis openal-soft freetype fribidi;
+        brew install glib libpng libogg libvorbis openal-soft freetype fribidi;
         sudo mkdir -p /usr/local/include/;
         xcrun --show-sdk-path;
         popd;
