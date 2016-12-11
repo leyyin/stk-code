@@ -26,6 +26,7 @@ env:
   #wget "http://downloads.sourceforge.net/project/supertuxkart/SuperTuxKart%20Dependencies/OSX/DepsFrameworks0.9.2-64bits.zip";
   #unzip -a DepsFrameworks0.9.2-64bits.zip;
   #         sudo ln -s /System/Library/Frameworks/OpenGL.framework/Versions/A/Headers/ /usr/local/include/GL;
+
 before_install:
   - 'if [ "$TRAVIS_OS_NAME" = "osx" ]; then
         echo "STARTING TO INSTALL PACKAGES";
@@ -37,13 +38,7 @@ before_install:
         ls -la /usr/include/freetype2;
         pkg-config --cflags freetype2;
         
-        # hack glib
-        echo $CPPFLAGS;
-        echo $LDFLAGS;
-        echo $PKG_CONFIG_PATH;
-        export CPPFLAGS=-I/usr/local/Cellar/glib/2.50.2/include/glib-2.0/;
-        export LDFLAGS=-L/usr/local/Cellar/glib/2.50.2/lib/;
-        export PKG_CONFIG_PATH=/usr/local/Cellar/glib/2.50.2/lib/pkgconfig/;
+        brew link glib;
         pwd;
         echo "ENDING TO INSTALL PACKAGES";
     fi'
