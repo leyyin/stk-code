@@ -27,7 +27,7 @@ env:
   #unzip -a DepsFrameworks0.9.2-64bits.zip;
   #         sudo ln -s /System/Library/Frameworks/OpenGL.framework/Versions/A/Headers/ /usr/local/include/GL;
 before_install:
-  - if [ "$TRAVIS_OS_NAME" = "osx" ]; then
+  - 'if [ "$TRAVIS_OS_NAME" = "osx" ]; then
         echo "STARTING TO INSTALL PACKAGES";
         sudo mkdir -p /usr/local/include/;
         brew update;
@@ -46,7 +46,7 @@ before_install:
         export PKG_CONFIG_PATH=/usr/local/Cellar/glib/2.50.2/lib/pkgconfig/;
         pwd;
         echo "ENDING TO INSTALL PACKAGES";
-    fi
+    fi'
 
 before_script:
   - export THREADS=8
