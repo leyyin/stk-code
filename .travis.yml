@@ -35,10 +35,10 @@ before_install:
         brew outdated cmake || brew upgrade cmake;
         brew install glib libpng libogg libvorbis openal-soft freetype fribidi;
         xcrun --show-sdk-path;
-        ls -la /usr/include/freetype2;
-        pkg-config --cflags freetype2;
         
-        brew link glib;
+        brew unlink glib && brew link glib;
+        
+        pkg-config --cflags freetype2;
         pwd;
         echo "ENDING TO INSTALL PACKAGES";
     fi'
