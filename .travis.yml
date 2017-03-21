@@ -59,8 +59,8 @@ script:
 notifications:
   irc:
     channels:
-      - "irc.freenode.org#supertuxkart"
-    skip_join: false
+      - "ircs://chat.freenode.net:7070#supertuxkart"
+    skip_join: true
     use_notice: true
     template:
       #- "[%{commit}: %{author}] %{message}"
