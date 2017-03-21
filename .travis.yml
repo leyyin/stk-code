@@ -3,6 +3,9 @@
 # Configuration manual:
 # http://docs.travis-ci.com/user/build-configuration/
 #
+
+# Use Ubuntu 14.04
+dist: trusty
 sudo: false
 language: cpp
 compiler:
@@ -60,7 +63,7 @@ notifications:
   irc:
     channels:
       - "ircs://chat.freenode.net:7070#supertuxkart"
-    skip_join: true
+    skip_join: false
     use_notice: true
     template:
       #- "[%{commit}: %{author}] %{message}"
