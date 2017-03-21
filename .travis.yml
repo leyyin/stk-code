@@ -6,7 +6,7 @@
 
 # Use Ubuntu 14.04
 dist: trusty
-sudo: false
+sudo: true
 language: cpp
 compiler:
   - gcc
@@ -62,7 +62,7 @@ script:
 notifications:
   irc:
     channels:
-      - "ircs://chat.freenode.net:7070#supertuxkart"
+      - "ircs://chat.freenode.net:7070#stk-builds"
     skip_join: false
     use_notice: true
     template:
